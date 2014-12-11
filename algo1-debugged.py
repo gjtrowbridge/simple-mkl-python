@@ -1,7 +1,6 @@
 import numpy as np
 import helpers
 import kernel_helpers as k_helpers
-from sklearn import svm
 
 def is_pos_def(x):
     return np.all(np.linalg.eigvals(x) > 0)
@@ -43,26 +42,10 @@ def find_kernel_weights(X, y, kernel_functions):
         print d
 
         combined_kernel_matrix = k_helpers.get_combined_kernel(kernel_matrices, d)
-        combined_kernel_func = k_helpers.get_combined_kernel_function(kernel_functions, d)
         print is_pos_def(combined_kernel_matrix)
         
-        clf = svm.SVC(kernel=combined_kernel_func)
-        clf.fit(X, y)
-        alpha = np.zeros(n)
-        for svi in range(len(clf.support_))
-            
-
-            alpha[i] = 
-
         #Gets J, also calculates the optimal values for alpha
         alpha, J, info = helpers.compute_J(combined_kernel_matrix, y_mat, alpha0, box_constraints)
-        print '~~~~~~~~~~~~~'
-        print len(clf.support_)
-        print len(clf.dual_coef_[0])
-        print '~~~~~~~~~~~~~'
-
-        print alpha
-        print '~~~~~~~~~~~~~'
         J *= -1
 
         #Gradient of J w.r.t d (weights)

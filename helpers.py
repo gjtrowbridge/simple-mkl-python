@@ -65,18 +65,24 @@ def compute_descent_direction(d, dJ, mu):
     #Gets descent direction
     for m in range(M):
         #Explained on p. 2498/2499
-        if d[m] == 0 and dJ[m] > dJ[mu]:
-            D[m] = 0
-        elif d[m] > 0 and m != mu:
-            D[m] = dJ[mu] - dJ[m]
-        elif m == mu:
+        if m == mu:
             D[m] = 0
             for v in range(M):
-                if (v != mu):
+                if (v != mu) and d[v] > 0:
                     D[m] += dJ[v] - dJ[mu]
+
+        elif d[m] == 0 and dJ[m] > dJ[mu]:
+            D[m] = 0
+
+        elif d[m] > 0 and m != mu:
+            D[m] = dJ[mu] - dJ[m]
+
         else:
+            print "fuck up here"
+            print d[m]
             print d
             print dJ
+            print m
             print mu
             raise Exception('Something went wrong with the descent update!')
 

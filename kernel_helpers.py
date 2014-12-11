@@ -33,6 +33,16 @@ def get_combined_kernel(kernel_matrices, weights):
 
     return combined_kernel_matrix
 
+def get_combined_kernel_function(kernel_functions, weights):
+    M = len(kernel_functions)
+    def combined_kernel(u, v):
+        result = 0
+        for m in range(M):
+            result += kernel_functions[m](u, v) * weights[m]
+        return result
+
+    return combined_kernel
+
 def linear_kernel(u, v):
     """ Returns inner product of u and v. """
 
