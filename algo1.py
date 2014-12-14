@@ -16,6 +16,7 @@ def find_kernel_weights(X, y, kernel_functions):
     #The weights of each kernel
     #Initialized to 1/M
     d = np.ones(M) / M
+    D = np.ones(M)
 
     #Just a placeholder for something that gets updated later
     dJ = '-20'
@@ -36,7 +37,7 @@ def find_kernel_weights(X, y, kernel_functions):
     iteration = 0
 
     #Loops until stopping criterion reached
-    while (not helpers.stopping_criterion(dJ, d, 0.01)):
+    while (max(D) != 0 and not helpers.stopping_criterion(dJ, d, 0.01)):
         iteration += 1
         print "iteration and weights:", iteration, d
 
@@ -71,12 +72,12 @@ def find_kernel_weights(X, y, kernel_functions):
             d = d_cross.copy()
             D = D_cross.copy()
 
-            print 'J:', J, '| J_cross:', J_cross
-            print '  d cross', d_cross
-            print '  d cross sum', sum(d_cross)
+            print '  J:', J, '| J_cross:', J_cross
+            print '    d cross', d_cross
+            print '    d cross sum', sum(d_cross)
 
-            print '  D cross', D_cross
-            print '  D cross sum', sum(D_cross)
+            print '    D cross', D_cross
+            print '    D cross sum', sum(D_cross)
 
             combined_kernel_matrix = k_helpers.get_combined_kernel(kernel_matrices, d)
             alpha, J, info = helpers.compute_J(combined_kernel_matrix, y_mat, alpha, box_constraints)
@@ -111,14 +112,15 @@ def find_kernel_weights(X, y, kernel_functions):
             combined_kernel_matrix_cross = k_helpers.get_combined_kernel(kernel_matrices, d_cross)
             alpha_cross, J_cross, cross_info = helpers.compute_J(combined_kernel_matrix_cross, y_mat, alpha, box_constraints)
             J_cross *= -1
-            print '  new J cross', J_cross
+            print '    new J cross', J_cross
 
         #Line search along D for gamma (step) in [0, gamma_max]
         # gamma = helpers.get_armijos_step_size()
         gamma = helpers.get_armijos_step_size(kernel_matrices, d, y_mat, alpha,
                                               box_constraints, gamma_max, J_cross,
                                               D, dJ)
-
+        print 'gamma:', gamma
+        print 'D:', D
         d += gamma * D
         d = helpers.fix_precision_of_vector(d, 1)
 

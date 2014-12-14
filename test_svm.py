@@ -48,12 +48,10 @@ kernel_functions = [
     k_helpers.create_poly_kernel(4, gamma),
     k_helpers.create_poly_kernel(5, gamma),
     k_helpers.create_poly_kernel(2, gamma),
-    k_helpers.linear_kernel,
     k_helpers.create_rbf_kernel(gamma),
+    k_helpers.linear_kernel,
     k_helpers.create_sigmoid_kernel(gamma),
 ]
 
-print 'yo'
 weights = algo1.find_kernel_weights(train_data, train_labels, kernel_functions)
-print weights
-print sum(weights)
+print 'Final weights for each kernel are:', weights
