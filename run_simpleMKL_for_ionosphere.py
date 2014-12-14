@@ -44,12 +44,11 @@ gamma = 1.0/d
 intercept = 0
 
 kernel_functions = [
+    k_helpers.linear_kernel,
+    k_helpers.create_rbf_kernel(gamma),
+    k_helpers.create_poly_kernel(2, gamma),
     k_helpers.create_poly_kernel(3, gamma),
     k_helpers.create_poly_kernel(4, gamma),
-    k_helpers.create_poly_kernel(5, gamma),
-    k_helpers.create_poly_kernel(2, gamma),
-    k_helpers.create_rbf_kernel(gamma),
-    k_helpers.linear_kernel,
     k_helpers.create_sigmoid_kernel(gamma),
 ]
 
