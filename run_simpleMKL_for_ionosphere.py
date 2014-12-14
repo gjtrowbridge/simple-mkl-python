@@ -3,20 +3,6 @@ import numpy as np
 import kernel_helpers as k_helpers
 
 
-def svm_classifier(point):
-    pass
-    # #Returns 1 for class positive, 0 for class negative
-    # calc_kernel = lambda x_i: kernel_func(point, x_i)
-    # kernel_vector = np.apply_along_axis(calc_kernel, axis=1,
-    #                                     arr=support_vectors)
-    # value = np.inner(alpha_y_nz, kernel_vector)
-    # if value > 0:
-    #     return 1
-    # else:
-    #     return 0
-    # return classifier
-
-
 data_file = 'ionosphere.data'
 
 data = np.genfromtxt(data_file, delimiter=',', dtype='|S10')
