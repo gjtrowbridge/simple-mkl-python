@@ -2,6 +2,14 @@ import numpy as np
 import kernel_helpers as k_helpers
 from scipy.optimize import fmin_l_bfgs_b
 
+#fixes vectors to be equal to their expected sums
+#(necessary b/c very slight precision errors were screwing
+# up the algorithm)
+def fix_precision_of_vector(vec, expected_sum):
+    u = np.argmax(abs(vec))
+    diff = expected_sum - sum(vec)
+    vec[u] += diff
+    return vec
 
 def get_box_constraints(n, C=1.0):
     C = C * 1.0
@@ -71,7 +79,12 @@ def compute_descent_direction(d, dJ, mu):
                 if (v != mu) and d[v] > 0:
                     D[m] += dJ[v] - dJ[mu]
 
-        elif d[m] == 0 and dJ[m] > dJ[mu]:
+        #If d[m] == 0, but allow for rounding errors
+        elif d[m] > -0.00000001 and d[m] < 0.00000001 and dJ[m] > dJ[mu]:
+            #Correct any rounding errors just in case
+            d[m] = 0
+
+            #Set descent direction to 0
             D[m] = 0
 
         elif d[m] > 0 and m != mu:

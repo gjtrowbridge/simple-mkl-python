@@ -36,24 +36,15 @@ def find_kernel_weights(X, y, kernel_functions):
     iteration = 0
 
     #Loops until stopping criterion reached
-    while (iteration < 15):#not helpers.stopping_criterion(dJ, d, 0.01)):
+    while (not helpers.stopping_criterion(dJ, d, 0.01)):
         iteration += 1
-        print "iteration and weights:"
-        print iteration
-        print d
+        print "iteration and weights:", iteration, d
 
         combined_kernel_matrix = k_helpers.get_combined_kernel(kernel_matrices, d)
         combined_kernel_func = k_helpers.get_combined_kernel_function(kernel_functions, d)
-        print is_pos_def(combined_kernel_matrix)
 
         #Gets J, also calculates the optimal values for alpha
         alpha, J, info = helpers.compute_J(combined_kernel_matrix, y_mat, alpha0, box_constraints)
-        print '~~~~~~~~~~~~~'
-        print J
-        print '~~~~~~~~~~~~~'
-
-        print sum(alpha > 0)
-        print '~~~~~~~~~~~~~'
         J *= -1
 
         #Gradient of J w.r.t d (weights)
@@ -67,9 +58,7 @@ def find_kernel_weights(X, y, kernel_functions):
         #using the index of the largest component of d as our "mu"
         #in the reduced gradient calculation
         D = helpers.compute_descent_direction(d, dJ, mu)
-        print dJ
-        print d
-        print D
+        D = helpers.fix_precision_of_vector(D, 0)
         J_cross = 0
         d_cross = d.copy()
         D_cross = D.copy()
@@ -81,6 +70,17 @@ def find_kernel_weights(X, y, kernel_functions):
             sub_iteration += 1
             d = d_cross.copy()
             D = D_cross.copy()
+
+            print 'J:', J, '| J_cross:', J_cross
+            print '  d cross', d_cross
+            print '  d cross sum', sum(d_cross)
+
+            print '  D cross', D_cross
+            print '  D cross sum', sum(D_cross)
+
+            combined_kernel_matrix = k_helpers.get_combined_kernel(kernel_matrices, d)
+            alpha, J, info = helpers.compute_J(combined_kernel_matrix, y_mat, alpha, box_constraints)
+            J *= -1
 
             #Maximum admissible step size
             gamma_max = 123456
@@ -97,33 +97,21 @@ def find_kernel_weights(X, y, kernel_functions):
                         v = m
 
             d_cross = d + gamma_max * D
-            print '^^^^^^^'
-            print y.T.dot(alpha)
-            print gamma_max
-            print '^^^^^^^'
 
-            print d_cross
-            print v
-            print '******'
+            #Not strictly necessary, but helps avoid precision errors
+            d_cross[v] = 0
 
-            print D_cross
-            print '******'
-            D_cross[mu] = D[mu] - D[v]
+
+            D_cross[mu] = D[mu] + D[v]
             D_cross[v] = 0
 
-            print D_cross
-            # D_cross = D_cross / np.linalg.norm(D_cross)
+            d_cross = helpers.fix_precision_of_vector(d_cross, 1)
+            D_cross = helpers.fix_precision_of_vector(D_cross, 0)
 
-            combined_kernel_matrix = k_helpers.get_combined_kernel(kernel_matrices, d_cross)
-            alpha_cross, J_cross, cross_info = helpers.compute_J(combined_kernel_matrix, y_mat, alpha, box_constraints)
+            combined_kernel_matrix_cross = k_helpers.get_combined_kernel(kernel_matrices, d_cross)
+            alpha_cross, J_cross, cross_info = helpers.compute_J(combined_kernel_matrix_cross, y_mat, alpha, box_constraints)
             J_cross *= -1
-            print '-------'
-            print J
-            print J_cross
-            print '-------'
-            if sub_iteration > 5:
-                raise Exception('asdg')
-            # J_cross = J + 1
+            print '  new J cross', J_cross
 
         #Line search along D for gamma (step) in [0, gamma_max]
         # gamma = helpers.get_armijos_step_size()
@@ -132,6 +120,7 @@ def find_kernel_weights(X, y, kernel_functions):
                                               D, dJ)
 
         d += gamma * D
+        d = helpers.fix_precision_of_vector(d, 1)
 
     #Return final weights
     return d

@@ -44,27 +44,16 @@ gamma = 1.0/d
 intercept = 0
 
 kernel_functions = [
-    k_helpers.linear_kernel,
-    k_helpers.create_poly_kernel(2, gamma),
     k_helpers.create_poly_kernel(3, gamma),
+    k_helpers.create_poly_kernel(4, gamma),
+    k_helpers.create_poly_kernel(5, gamma),
+    k_helpers.create_poly_kernel(2, gamma),
+    k_helpers.linear_kernel,
     k_helpers.create_rbf_kernel(gamma),
-    k_helpers.create_sigmoid_kernel(gamma)
+    k_helpers.create_sigmoid_kernel(gamma),
 ]
 
+print 'yo'
 weights = algo1.find_kernel_weights(train_data, train_labels, kernel_functions)
 print weights
 print sum(weights)
-
-# kernel_dict = {'linear': ker.linear,
-#                'polynomial': ker.poly(degree=3, gamma=gamma),
-#                'rbf/gaussian': ker.rbf(gamma=gamma),
-#                'sigmoid/arctan': ker.sigmoid(gamma=gamma)}
-
-# for kernel_name in sorted(kernel_dict.keys()):
-#     print 'Training an SVM using the %s kernel...' % kernel_name
-#     svm_classifier = svm_train(train_data, train_labels,
-#                                kernel_dict[kernel_name])
-#     confusion_mat = evaluate_classifier(svm_classifier, test_data,
-#                                         test_labels)
-#     print_evaluation_summary(confusion_mat)
-#     print
